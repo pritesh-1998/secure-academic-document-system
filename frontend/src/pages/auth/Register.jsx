@@ -38,7 +38,7 @@ export default function Register() {
 
   const strength = getPasswordStrength(formData.password);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
@@ -52,15 +52,13 @@ export default function Register() {
     }
 
     setLoading(true);
-    setTimeout(() => {
-      const result = register(formData.name, formData.email, formData.password, formData.role);
-      if (result.success) {
-        navigate('/dashboard');
-      } else {
-        setError(result.message);
-      }
-      setLoading(false);
-    }, 600);
+    const result = await register(formData.name, formData.email, formData.password, formData.role);
+    if (result.success) {
+      navigate('/dashboard');
+    } else {
+      setError(result.message);
+    }
+    setLoading(false);
   };
 
   const inputClass = "w-full px-4 py-2.5 rounded-lg border border-border bg-bg text-text text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-colors";

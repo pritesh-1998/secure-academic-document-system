@@ -11,21 +11,18 @@ export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
-    // Simulate network delay
-    setTimeout(() => {
-      const result = login(email, password);
-      if (result.success) {
-        navigate('/dashboard');
-      } else {
-        setError(result.message);
-      }
-      setLoading(false);
-    }, 600);
+    const result = await login(email, password);
+    if (result.success) {
+      navigate('/dashboard');
+    } else {
+      setError(result.message);
+    }
+    setLoading(false);
   };
 
   return (
@@ -96,14 +93,6 @@ export default function Login() {
         </Link>
       </p>
 
-      {/* Demo credentials hint */}
-      <div className="mt-4 p-3 bg-bg rounded-lg border border-border">
-        <p className="text-xs text-text-secondary font-medium mb-1">Demo Accounts:</p>
-        <p className="text-xs text-text-secondary">Student: alice@university.edu</p>
-        <p className="text-xs text-text-secondary">Teacher: sarah.w@university.edu</p>
-        <p className="text-xs text-text-secondary">Admin: admin@university.edu</p>
-        <p className="text-xs text-text-secondary">Password: password123</p>
-      </div>
     </AuthLayout>
   );
 }

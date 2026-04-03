@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import api from '../../services/api';
 
 export default function CreateTask() {
   const navigate = useNavigate();
@@ -15,13 +16,18 @@ export default function CreateTask() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      await api.post('/tasks', formData);
       setCreated(true);
-    }, 800);
+    } catch (error) {
+      console.error("Failed to create task", error);
+      alert("Failed to create task. " + (error.response?.data?.message || ''));
+    } finally {
+      setLoading(false);
+    }
   };
 
   const inputClass = "w-full px-4 py-2.5 rounded-lg border border-border bg-bg text-text text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-colors";
