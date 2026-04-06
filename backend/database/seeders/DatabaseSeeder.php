@@ -15,8 +15,28 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Generate 5 Crypto-Compliant Students
-        User::factory(5)->create();
+        // Generate 2 Random Crypto-Compliant Students
+        User::factory(2)->create();
+
+        // Generate specific demo students
+        User::factory()->create([
+            'name' => 'John',
+            'email' => 'john@gmail.com',
+            'role' => 'student',
+            'student_id' => 'STU-3488',
+        ]);
+        User::factory()->create([
+            'name' => 'Jason',
+            'email' => 'jason@gmail.com',
+            'role' => 'student',
+            'student_id' => 'STU-3191',
+        ]);
+        User::factory()->create([
+            'name' => 'Kim',
+            'email' => 'kim@gmail.com',
+            'role' => 'student',
+            'student_id' => 'STU-2761',
+        ]);
 
         // Let's explicitly create 1 admin and 1 teacher so the User has easy demo access
         User::factory()->create([

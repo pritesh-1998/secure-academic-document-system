@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\SubmissionController;
+use App\Http\Controllers\UserController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -25,4 +26,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/submissions', [SubmissionController::class, 'index']);
     Route::post('/submissions/upload', [SubmissionController::class, 'upload']);
     Route::get('/submissions/{id}/download', [SubmissionController::class, 'download']);
+
+    // Users API (For Sidebar User Directory)
+    Route::get('/users/list', [UserController::class, 'index']);
 });

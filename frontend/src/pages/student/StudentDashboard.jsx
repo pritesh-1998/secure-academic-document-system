@@ -29,7 +29,7 @@ export default function StudentDashboard() {
   }, []);
 
   if (loading) {
-    return <div className="p-8 text-center text-text-secondary animate-pulse">Loading secure dashboard...</div>;
+    return <div className="p-4 sm:p-8 text-center text-text-secondary animate-pulse">Loading secure dashboard...</div>;
   }
 
   // Get tasks and figure out which are incomplete
@@ -80,43 +80,43 @@ export default function StudentDashboard() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Alert Bar */}
-      <div className={`p-4 rounded-xl border ${alert.bg} flex items-center gap-3 shadow-sm`}>
-        <span className="text-xl">{alert.icon}</span>
-        <p className={`text-sm font-medium ${alert.text}`}>{alert.message}</p>
+      <div className={`p-3 sm:p-4 rounded-xl border ${alert.bg} flex items-center gap-2 sm:gap-3 shadow-sm`}>
+        <span className="text-lg sm:text-xl">{alert.icon}</span>
+        <p className={`text-xs sm:text-sm font-medium ${alert.text}`}>{alert.message}</p>
       </div>
 
       {/* Stats Row */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-card rounded-xl border border-border p-5 shadow-sm">
-          <p className="text-sm text-text-secondary mb-1">Total Tasks</p>
-          <p className="text-2xl font-bold text-text">{tasks.length}</p>
+      <div className="grid grid-cols-3 gap-2 sm:gap-4">
+        <div className="bg-card rounded-xl border border-border p-3 sm:p-5 shadow-sm">
+          <p className="text-[10px] sm:text-sm text-text-secondary mb-0.5 sm:mb-1">Total Tasks</p>
+          <p className="text-lg sm:text-2xl font-bold text-text">{tasks.length}</p>
         </div>
-        <div className="bg-card rounded-xl border border-border p-5 shadow-sm">
-          <p className="text-sm text-text-secondary mb-1">Submitted</p>
-          <p className="text-2xl font-bold text-success">{submissions.length}</p>
+        <div className="bg-card rounded-xl border border-border p-3 sm:p-5 shadow-sm">
+          <p className="text-[10px] sm:text-sm text-text-secondary mb-0.5 sm:mb-1">Submitted</p>
+          <p className="text-lg sm:text-2xl font-bold text-success">{submissions.length}</p>
         </div>
-        <div className="bg-card rounded-xl border border-border p-5 shadow-sm">
-          <p className="text-sm text-text-secondary mb-1">Pending</p>
-          <p className="text-2xl font-bold text-warning">{incompleteTasks.length}</p>
+        <div className="bg-card rounded-xl border border-border p-3 sm:p-5 shadow-sm">
+          <p className="text-[10px] sm:text-sm text-text-secondary mb-0.5 sm:mb-1">Pending</p>
+          <p className="text-lg sm:text-2xl font-bold text-warning">{incompleteTasks.length}</p>
         </div>
       </div>
 
       {/* Upcoming Tasks */}
       <div className="bg-card rounded-xl border border-border shadow-sm">
-        <div className="p-5 border-b border-border flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-text">Upcoming Assignments</h2>
+        <div className="p-3 sm:p-5 border-b border-border flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
+          <h2 className="text-base sm:text-lg font-semibold text-text">Upcoming Assignments</h2>
           <Link
             to="/upload"
-            className="px-4 py-2 bg-primary hover:bg-primary-dark text-white text-sm font-medium rounded-lg transition-colors shadow-sm"
+            className="px-3 sm:px-4 py-2 bg-primary hover:bg-primary-dark text-white text-xs sm:text-sm font-medium rounded-lg transition-colors shadow-sm text-center"
           >
             Upload Assignment
           </Link>
         </div>
         <div className="divide-y divide-border">
           {[...overdueTasks, ...upcomingTasks].length === 0 ? (
-            <div className="p-8 text-center text-text-secondary text-sm">
+            <div className="p-6 sm:p-8 text-center text-text-secondary text-sm">
               No pending assignments. Great job! 🎉
             </div>
           ) : (
@@ -124,14 +124,14 @@ export default function StudentDashboard() {
               const days = daysUntil(task.deadline);
               const urgency = getUrgency(days);
               return (
-                <div key={task.id} className="p-5 flex items-center justify-between hover:bg-bg/50 transition-colors">
+                <div key={task.id} className="p-3 sm:p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-0 hover:bg-bg/50 transition-colors">
                   <div>
-                    <h3 className="font-medium text-text">{task.title}</h3>
-                    <p className="text-sm text-text-secondary mt-0.5">
+                    <h3 className="font-medium text-text text-sm sm:text-base">{task.title}</h3>
+                    <p className="text-xs sm:text-sm text-text-secondary mt-0.5">
                       {task.teacher?.name || 'Teacher'} · Due {formatDate(task.deadline)}
                     </p>
                   </div>
-                  <span className={`text-xs font-medium px-3 py-1 rounded-full ${urgencyStyles[urgency]}`}>
+                  <span className={`text-[10px] sm:text-xs font-medium px-2 sm:px-3 py-0.5 sm:py-1 rounded-full self-start sm:self-auto ${urgencyStyles[urgency]}`}>
                     {days < 0 ? `${Math.abs(days)} days overdue` : days === 0 ? 'Due today' : `${days} days left`}
                   </span>
                 </div>
@@ -143,40 +143,58 @@ export default function StudentDashboard() {
 
       {/* My Submissions */}
       <div className="bg-card rounded-xl border border-border shadow-sm">
-        <div className="p-5 border-b border-border">
-          <h2 className="text-lg font-semibold text-text">Cryptographic Submissions</h2>
+        <div className="p-3 sm:p-5 border-b border-border">
+          <h2 className="text-base sm:text-lg font-semibold text-text">Cryptographic Submissions</h2>
         </div>
         {submissions.length === 0 ? (
-          <div className="p-8 text-center text-text-secondary text-sm">
+          <div className="p-6 sm:p-8 text-center text-text-secondary text-sm">
             No secure submissions yet. Upload your first assignment!
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-border">
-                  <th className="text-left text-xs font-medium text-text-secondary uppercase tracking-wider px-5 py-3">Task ID</th>
-                  <th className="text-left text-xs font-medium text-text-secondary uppercase tracking-wider px-5 py-3">File</th>
-                  <th className="text-left text-xs font-medium text-text-secondary uppercase tracking-wider px-5 py-3">Date</th>
-                  <th className="text-left text-xs font-medium text-text-secondary uppercase tracking-wider px-5 py-3">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {submissions.map((sub) => (
-                  <tr key={sub.id} className="hover:bg-bg/50 transition-colors">
-                    <td className="px-5 py-3.5 text-sm text-text font-medium">{sub.task?.title || `#${sub.task_id}`}</td>
-                    <td className="px-5 py-3.5 text-sm text-text-secondary">{sub.original_filename}</td>
-                    <td className="px-5 py-3.5 text-sm text-text-secondary">{new Date(sub.created_at).toLocaleDateString()}</td>
-                    <td className="px-5 py-3.5">
-                      <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${statusStyles[sub.status] || statusStyles.uploaded}`}>
-                        {sub.status === 'submitted' ? '🔒 AES Encrypted' : '⏳ Pending'}
-                      </span>
-                    </td>
+          <>
+            {/* Mobile card view */}
+            <div className="sm:hidden divide-y divide-border">
+              {submissions.map((sub) => (
+                <div key={sub.id} className="p-3 space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-medium text-text">{sub.task?.title || `#${sub.task_id}`}</p>
+                    <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${statusStyles[sub.status] || statusStyles.uploaded}`}>
+                      {sub.status === 'submitted' ? '🔒 Encrypted' : '⏳ Pending'}
+                    </span>
+                  </div>
+                  <p className="text-xs text-text-secondary truncate">{sub.original_filename}</p>
+                  <p className="text-[10px] text-text-secondary">{new Date(sub.created_at).toLocaleDateString()}</p>
+                </div>
+              ))}
+            </div>
+            {/* Desktop table view */}
+            <div className="hidden sm:block overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-border">
+                    <th className="text-left text-xs font-medium text-text-secondary uppercase tracking-wider px-5 py-3">Task ID</th>
+                    <th className="text-left text-xs font-medium text-text-secondary uppercase tracking-wider px-5 py-3">File</th>
+                    <th className="text-left text-xs font-medium text-text-secondary uppercase tracking-wider px-5 py-3">Date</th>
+                    <th className="text-left text-xs font-medium text-text-secondary uppercase tracking-wider px-5 py-3">Status</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {submissions.map((sub) => (
+                    <tr key={sub.id} className="hover:bg-bg/50 transition-colors">
+                      <td className="px-5 py-3.5 text-sm text-text font-medium">{sub.task?.title || `#${sub.task_id}`}</td>
+                      <td className="px-5 py-3.5 text-sm text-text-secondary">{sub.original_filename}</td>
+                      <td className="px-5 py-3.5 text-sm text-text-secondary">{new Date(sub.created_at).toLocaleDateString()}</td>
+                      <td className="px-5 py-3.5">
+                        <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${statusStyles[sub.status] || statusStyles.uploaded}`}>
+                          {sub.status === 'submitted' ? '🔒 AES Encrypted' : '⏳ Pending'}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </div>
     </div>

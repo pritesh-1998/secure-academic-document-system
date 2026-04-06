@@ -104,11 +104,11 @@ export default function PasswordReset() {
 
   // Stepper indicator
   const Stepper = () => (
-    <div className="flex items-center justify-center gap-2 mb-6">
+    <div className="flex items-center justify-center gap-1.5 sm:gap-2 mb-4 sm:mb-6">
       {[1, 2, 3].map((s) => (
-        <div key={s} className="flex items-center gap-2">
+        <div key={s} className="flex items-center gap-1.5 sm:gap-2">
           <div
-            className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${
+            className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs sm:text-sm font-medium transition-colors ${
               step >= s
                 ? 'bg-primary text-white'
                 : 'bg-border text-text-secondary'
@@ -117,7 +117,7 @@ export default function PasswordReset() {
             {step > s ? '✓' : s}
           </div>
           {s < 3 && (
-            <div className={`w-8 h-0.5 ${step > s ? 'bg-primary' : 'bg-border'}`} />
+            <div className={`w-6 sm:w-8 h-0.5 ${step > s ? 'bg-primary' : 'bg-border'}`} />
           )}
         </div>
       ))}
@@ -137,8 +137,8 @@ export default function PasswordReset() {
       {/* Step 1: Enter Email */}
       {step === 1 && (
         <form onSubmit={handleSendOTP} className="space-y-4">
-          <h2 className="text-xl font-semibold text-text">Reset Password</h2>
-          <p className="text-sm text-text-secondary">
+          <h2 className="text-lg sm:text-xl font-semibold text-text">Reset Password</h2>
+          <p className="text-xs sm:text-sm text-text-secondary">
             Enter your email address and we'll send you a verification code.
           </p>
           <div>
@@ -166,11 +166,11 @@ export default function PasswordReset() {
       {/* Step 2: Enter OTP */}
       {step === 2 && (
         <form onSubmit={handleVerifyOTP} className="space-y-4">
-          <h2 className="text-xl font-semibold text-text">Verify OTP</h2>
-          <p className="text-sm text-text-secondary">
-            Enter the 6-digit code sent to <span className="font-medium text-text">{email}</span>
+          <h2 className="text-lg sm:text-xl font-semibold text-text">Verify OTP</h2>
+          <p className="text-xs sm:text-sm text-text-secondary">
+            Enter the 6-digit code sent to <span className="font-medium text-text break-all">{email}</span>
           </p>
-          <div className="flex gap-2 justify-center">
+          <div className="flex gap-1.5 sm:gap-2 justify-center">
             {otp.map((digit, i) => (
               <input
                 key={i}
@@ -181,7 +181,7 @@ export default function PasswordReset() {
                 value={digit}
                 onChange={(e) => handleOTPChange(i, e.target.value)}
                 onKeyDown={(e) => handleOTPKeyDown(i, e)}
-                className="w-12 h-12 text-center text-lg font-semibold rounded-lg border border-border bg-bg text-text focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-colors"
+                className="w-10 h-10 sm:w-12 sm:h-12 text-center text-base sm:text-lg font-semibold rounded-lg border border-border bg-bg text-text focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-colors"
               />
             ))}
           </div>
@@ -213,8 +213,8 @@ export default function PasswordReset() {
       {/* Step 3: New Password */}
       {step === 3 && (
         <form onSubmit={handleResetPassword} className="space-y-4">
-          <h2 className="text-xl font-semibold text-text">New Password</h2>
-          <p className="text-sm text-text-secondary">
+          <h2 className="text-lg sm:text-xl font-semibold text-text">New Password</h2>
+          <p className="text-xs sm:text-sm text-text-secondary">
             Create a strong password for your account.
           </p>
           <div>

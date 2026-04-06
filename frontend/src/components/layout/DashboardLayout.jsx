@@ -9,9 +9,9 @@ export default function DashboardLayout({ title }) {
   return (
     <div className="flex min-h-screen">
       <Sidebar />
-      <div className="flex-1 ml-64">
+      <div className="flex-1 lg:ml-52">
         <Navbar title={title} />
-        <main className="p-8">
+        <main className="p-4 sm:p-6 lg:p-8">
           <Outlet />
         </main>
       </div>
