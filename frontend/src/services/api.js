@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create an Axios instance with base URL and default config
 const api = axios.create({
-    baseURL: 'http://localhost:8000/api', // Laravel API 
+    baseURL: '/api', // Laravel API (proxied via Vite)
     headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
