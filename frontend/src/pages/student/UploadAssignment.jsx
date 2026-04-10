@@ -8,6 +8,7 @@ export default function UploadAssignment() {
   const [dragActive, setDragActive] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploaded, setUploaded] = useState(false);
+  const [notes, setNotes] = useState('');
   
   // Crypto Visualization State
   const [cryptoStage, setCryptoStage] = useState(0);
@@ -77,6 +78,9 @@ export default function UploadAssignment() {
     const formData = new FormData();
     formData.append('task_id', selectedTask);
     formData.append('document', file);
+    if (notes) {
+      formData.append('notes', notes);
+    }
 
     try {
       await api.post('/submissions/upload', formData, {
@@ -96,6 +100,7 @@ export default function UploadAssignment() {
   const resetForm = () => {
     setFile(null);
     setSelectedTask('');
+    setNotes('');
     setUploaded(false);
     setCryptoStage(0);
   };
@@ -238,6 +243,19 @@ export default function UploadAssignment() {
               </button>
             </div>
           )}
+
+          {/* Notes Field */}
+          <div>
+            <label className="block text-xs sm:text-sm font-medium text-text-secondary mb-1 sm:mb-1.5">
+              Assignment Notes (Optional)
+            </label>
+            <textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="Add any comments or notes for your teacher..."
+              className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg border border-border bg-bg text-text text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-colors min-h-[80px] resize-y"
+            ></textarea>
+          </div>
 
           {/* Upload Button */}
           <button

@@ -61,13 +61,36 @@ export default function TeacherDashboard() {
 
   const delay = (ms) => new Promise(res => setTimeout(res, ms));
 
-  const handleDownload = async (submissionId, filename) => {
+  const handleDownload = async (sub, filename) => {
+    const submissionId = sub.id;
+    const alreadyVerified = sub.status === 'verified';
+
     try {
+      if (alreadyVerified) {
+        // Show all steps instantly as completed, then download
+        setDecryptingId(submissionId);
+        setCryptoStage(5); // Jump straight to fully complete — shows all steps as ✔
+
+        const response = await api.get(`/submissions/${submissionId}/download`, {
+          responseType: 'blob'
+        });
+
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', filename);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        return;
+      }
+
+      // First-time verification — run crypto animation step by step
       setDecryptingId(submissionId);
       setCryptoStage(0);
 
       for(let i = 0; i < 5; i++) {
-        await delay(500);
+        await delay(180);
         setCryptoStage(i + 1);
       }
 
@@ -76,7 +99,7 @@ export default function TeacherDashboard() {
       });
 
       setCryptoStage(5);
-      await delay(600);
+      await delay(300);
 
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
@@ -85,7 +108,7 @@ export default function TeacherDashboard() {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      
+
     } catch (error) {
       alert("CRITICAL: Failed to decrypt or verify signature! Potential tampering detected.");
       console.error(error);
@@ -346,13 +369,27 @@ export default function TeacherDashboard() {
                   submissions.map((sub) => (
                     <React.Fragment key={sub.id}>
                       <div className="p-3 space-y-2">
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between gap-2">
                           <p className="text-sm font-medium text-text">{sub.student?.name || 'Unknown'}</p>
-                          <p className="text-[10px] text-text-secondary">{sub.task?.title || `#${sub.task_id}`}</p>
+                          {sub.integrity_flag === 'duplicate_detected' && (
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-100 text-red-700 border border-red-300 whitespace-nowrap">🔴 Exact Copy</span>
+                          )}
+                          {sub.integrity_flag === 'similar_content_detected' && (
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 border border-orange-300 whitespace-nowrap">⚠️ Similar Content</span>
+                          )}
                         </div>
-                        <p className="text-xs text-text-secondary truncate">🔒 {sub.original_filename}</p>
+                        <p className="text-[10px] text-text-secondary">{sub.task?.title || `#${sub.task_id}`}</p>
+                        {sub.integrity_flag && sub.matched_submission?.student && (
+                          <p className="text-[10px] text-text-secondary italic">Source: {sub.matched_submission.student.name}</p>
+                        )}
+                        <p className="text-xs text-text-secondary truncate">{sub.status === 'verified' ? '✅' : '🔒'} {sub.original_filename}</p>
+                        {sub.notes && (
+                          <div className="mt-2 bg-bg p-2 rounded-lg border border-border">
+                            <p className="text-xs text-text-secondary italic">" {sub.notes} "</p>
+                          </div>
+                        )}
                         <button 
-                          onClick={() => handleDownload(sub.id, sub.original_filename)}
+                          onClick={() => handleDownload(sub, sub.original_filename)}
                           disabled={decryptingId !== null}
                           className={`w-full text-xs font-bold transition-colors shadow-sm px-3 py-2 rounded-lg
                             ${decryptingId === sub.id && cryptoStage < 5 ? 'bg-warning text-white cursor-wait' : ''} 
@@ -362,7 +399,7 @@ export default function TeacherDashboard() {
                         >
                           {decryptingId === sub.id 
                               ? (cryptoStage === 5 ? '✅ Authenticated' : 'Authenticating...') 
-                              : 'Decrypt & Verify'}
+                              : sub.status === 'verified' ? '✅ Verified (Download Again)' : 'Decrypt & Verify Signature'}
                         </button>
                       </div>
                       {decryptingId === sub.id && (
@@ -404,6 +441,8 @@ export default function TeacherDashboard() {
                     <tr className="border-b border-border bg-bg/30">
                       <th className="text-left py-3 px-5 text-xs font-semibold text-text-secondary uppercase">Student</th>
                       <th className="text-left py-3 px-5 text-xs font-semibold text-text-secondary uppercase">Task</th>
+                      <th className="text-left py-3 px-5 text-xs font-semibold text-text-secondary uppercase">Integrity</th>
+                      <th className="text-left py-3 px-5 text-xs font-semibold text-text-secondary uppercase">Notes</th>
                       <th className="text-left py-3 px-5 text-xs font-semibold text-text-secondary uppercase">Encrypted File</th>
                       <th className="text-left py-3 px-5 text-xs font-semibold text-text-secondary uppercase">Action</th>
                     </tr>
@@ -411,26 +450,52 @@ export default function TeacherDashboard() {
                   <tbody className="divide-y divide-border">
                     {submissions.length === 0 ? (
                       <tr>
-                        <td colSpan="4" className="py-8 text-center text-text-secondary text-sm">
+                        <td colSpan="6" className="py-8 text-center text-text-secondary text-sm">
                           No submissions received yet.
                         </td>
                       </tr>
                     ) : (
                       submissions.map((sub) => (
                         <React.Fragment key={sub.id}>
-                        <tr className="hover:bg-bg/50 transition-colors">
+                        <tr className={`transition-colors border-l-4 ${
+                          sub.status === 'verified'
+                            ? 'bg-green-50/60 border-l-green-400 hover:bg-green-50'
+                            : 'bg-amber-50/30 border-l-amber-300 hover:bg-amber-50/60'
+                        }`}>
                           <td className="py-4 px-5 text-sm text-text font-medium">
                             {sub.student?.name || 'Unknown'}
                           </td>
                           <td className="py-4 px-5 text-sm text-text-secondary">
                             {sub.task?.title || `#${sub.task_id}`}
                           </td>
+                          <td className="py-4 px-5">
+                            {sub.integrity_flag === 'duplicate_detected' ? (
+                              <div className="space-y-1">
+                                <span className="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full bg-red-100 text-red-700 border border-red-300 whitespace-nowrap">🔴 Exact Copy</span>
+                                {sub.matched_submission?.student && (
+                                  <p className="text-[10px] text-text-secondary">of <span className="font-semibold text-red-600">{sub.matched_submission.student.name}</span>'s submission</p>
+                                )}
+                              </div>
+                            ) : sub.integrity_flag === 'similar_content_detected' ? (
+                              <div className="space-y-1">
+                                <span className="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full bg-orange-100 text-orange-700 border border-orange-300 whitespace-nowrap">⚠️ Similar Content</span>
+                                {sub.matched_submission?.student && (
+                                  <p className="text-[10px] text-text-secondary">similar to <span className="font-semibold text-orange-600">{sub.matched_submission.student.name}</span>'s submission</p>
+                                )}
+                              </div>
+                            ) : (
+                              <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-success/10 text-success">✔ Clean</span>
+                            )}
+                          </td>
+                          <td className="py-4 px-5 text-xs text-text-secondary whitespace-normal break-words max-w-[300px]">
+                            {sub.notes ? `"${sub.notes}"` : '-'}
+                          </td>
                           <td className="py-4 px-5 text-sm font-mono text-text-secondary max-w-xs truncate">
-                            🔒 {sub.original_filename}
+                            {sub.status === 'verified' ? '✅' : '🔒'} {sub.original_filename}
                           </td>
                           <td className="py-4 px-5">
                             <button 
-                              onClick={() => handleDownload(sub.id, sub.original_filename)}
+                              onClick={() => handleDownload(sub, sub.original_filename)}
                               disabled={decryptingId !== null}
                               className={`text-xs sm:text-sm font-bold transition-colors shadow-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg whitespace-nowrap
                                 ${decryptingId === sub.id && cryptoStage < 5 ? 'bg-warning text-white cursor-wait' : ''} 
@@ -440,13 +505,13 @@ export default function TeacherDashboard() {
                             >
                               {decryptingId === sub.id 
                                   ? (cryptoStage === 5 ? '✅ Authenticated' : 'Authenticating...') 
-                                  : 'Decrypt & Verify Signature'}
+                                  : sub.status === 'verified' ? '✅ Verified (Download Again)' : 'Decrypt & Verify Signature'}
                             </button>
                           </td>
                         </tr>
                         {decryptingId === sub.id && (
                           <tr>
-                            <td colSpan="4" className="p-0 border-b-0">
+                            <td colSpan="6" className="p-0 border-b-0">
                               <div className="bg-bg/80 border-x border-b border-warning/30 p-4 sm:p-6 animate-pulse">
                                 <div className="flex flex-col gap-2 relative">
                                   <div className="absolute top-0 left-0 h-0.5 bg-warning transition-all duration-300 ease-out" 

@@ -87,13 +87,19 @@ export default function Sidebar() {
     admin: 'bg-admin',
   };
 
+  const isTeacher = user?.role === 'teacher';
+  const sidebarBg = isTeacher ? 'bg-[#1e1b4b]' : 'bg-sidebar';
+  const sidebarHover = isTeacher ? 'hover:bg-[#312e81]' : 'hover:bg-sidebar-hover';
+  const activeNavClass = isTeacher ? 'bg-[#4f46e5]' : 'bg-primary';
+  const logoAccent = isTeacher ? 'bg-[#4f46e5]' : 'bg-primary';
+
   const sidebarContent = (
     <>
       {/* Logo */}
       <div className="p-4 border-b border-white/10">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center shrink-0">
+            <div className={`w-8 h-8 ${logoAccent} rounded-lg flex items-center justify-center shrink-0`}>
               <svg className="w-4.5 h-4.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
               </svg>
@@ -123,8 +129,8 @@ export default function Sidebar() {
             className={({ isActive }) =>
               `flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
                 isActive
-                  ? 'bg-primary text-white'
-                  : 'text-white/70 hover:bg-sidebar-hover hover:text-white'
+                  ? `${activeNavClass} text-white`
+                  : `text-white/70 ${sidebarHover} hover:text-white`
               }`
             }
           >
@@ -180,13 +186,13 @@ export default function Sidebar() {
       )}
 
       {/* Desktop sidebar — always visible on lg+ */}
-      <aside className="hidden lg:flex w-52 bg-sidebar min-h-screen flex-col fixed left-0 top-0 z-30">
+      <aside className={`hidden lg:flex w-52 ${sidebarBg} min-h-screen flex-col fixed left-0 top-0 z-30`}>
         {sidebarContent}
       </aside>
 
       {/* Mobile sidebar — slides in from the left */}
       <aside
-        className={`lg:hidden fixed left-0 top-0 z-50 w-64 bg-sidebar min-h-screen flex flex-col transition-transform duration-300 ease-in-out ${
+        className={`lg:hidden fixed left-0 top-0 z-50 w-64 ${sidebarBg} min-h-screen flex flex-col transition-transform duration-300 ease-in-out ${
           mobileOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >

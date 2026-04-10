@@ -1,7 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
 /* Google Font */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 /* Custom Design Tokens */
 @theme {
@@ -28,8 +28,14 @@
   --color-border: #e2e8f0;
   --color-text: #1e293b;
   --color-text-secondary: #64748b;
+
+  /* Student theme sidebar (dark navy) */
   --color-sidebar: #1e293b;
   --color-sidebar-hover: #334155;
+
+  /* Teacher theme sidebar (deep indigo) */
+  --color-sidebar-teacher: #1e1b4b;
+  --color-sidebar-teacher-hover: #312e81;
 }
 
 /* Base Styles */
@@ -39,6 +45,11 @@ body {
   color: var(--color-text);
   margin: 0;
   -webkit-font-smoothing: antialiased;
+}
+
+/* Teacher role: light lavender page background */
+body[data-role="teacher"] {
+  background-color: #f5f3ff;
 }
 
 * {

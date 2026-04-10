@@ -23,6 +23,10 @@ class Submission extends Model
         'signature',
         'signature_algorithm',
         'document_hash_sha256',
+        'notes',
+        'integrity_flag',
+        'simhash_fingerprint',
+        'flagged_match_submission_id',
     ];
 
     public function student()
@@ -33,5 +37,10 @@ class Submission extends Model
     public function task()
     {
         return $this->belongsTo(Task::class);
+    }
+
+    public function matchedSubmission()
+    {
+        return $this->belongsTo(Submission::class, 'flagged_match_submission_id');
     }
 }

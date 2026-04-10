@@ -1,0 +1,16 @@
+This is a TEST ASSIGNMENT FILE for INSE 6110.
+
+Student Name: [Student Name]
+Course: Applied Security
+Task: Test Assignment
+
+Content:
+The purpose of this file is to test the Secure Academic Document System
+duplicate submission detection feature.
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod
+tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
+veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+commodo consequat.
+
+Submission Date: April 2026

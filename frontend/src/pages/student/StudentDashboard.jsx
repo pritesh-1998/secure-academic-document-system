@@ -9,6 +9,19 @@ export default function StudentDashboard() {
   const [tasks, setTasks] = useState([]);
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState(null);
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Are you sure you want to remove this submission? This action cannot be undone.')) return;
+    try {
+      await api.delete(`/submissions/${id}`);
+      setSubmissions(prev => prev.filter(s => s.id !== id));
+    } catch (error) {
+      alert(error.response?.data?.error || 'Failed to remove submission.');
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -159,11 +172,27 @@ export default function StudentDashboard() {
                   <div className="flex items-center justify-between">
                     <p className="text-sm font-medium text-text">{sub.task?.title || `#${sub.task_id}`}</p>
                     <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${statusStyles[sub.status] || statusStyles.uploaded}`}>
-                      {sub.status === 'submitted' ? '🔒 Encrypted' : '⏳ Pending'}
+                      {sub.status === 'verified' ? '✅ Verified by Teacher' : sub.status === 'submitted' ? '🔒 Encrypted' : '⏳ Pending'}
                     </span>
                   </div>
                   <p className="text-xs text-text-secondary truncate">{sub.original_filename}</p>
                   <p className="text-[10px] text-text-secondary">{new Date(sub.created_at).toLocaleDateString()}</p>
+                  {sub.integrity_flag === 'duplicate_detected' && (
+                    <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-orange-100 text-orange-600 border border-orange-200">⚠️ Under Review</span>
+                  )}
+                  {sub.notes && (
+                    <div className="mt-2 bg-bg p-2 rounded-lg border border-border">
+                      <p className="text-xs text-text-secondary italic">" {sub.notes} "</p>
+                    </div>
+                  )}
+                  {sub.status !== 'verified' && (
+                    <button
+                      onClick={() => handleDelete(sub.id)}
+                      className="w-full mt-1 text-xs font-medium py-1.5 rounded-lg border border-danger/30 text-danger hover:bg-danger/10 transition-colors"
+                    >
+                      🗑 Remove Submission
+                    </button>
+                  )}
                 </div>
               ))}
             </div>
@@ -175,7 +204,9 @@ export default function StudentDashboard() {
                     <th className="text-left text-xs font-medium text-text-secondary uppercase tracking-wider px-5 py-3">Task ID</th>
                     <th className="text-left text-xs font-medium text-text-secondary uppercase tracking-wider px-5 py-3">File</th>
                     <th className="text-left text-xs font-medium text-text-secondary uppercase tracking-wider px-5 py-3">Date</th>
+                    <th className="text-left text-xs font-medium text-text-secondary uppercase tracking-wider px-5 py-3">Notes</th>
                     <th className="text-left text-xs font-medium text-text-secondary uppercase tracking-wider px-5 py-3">Status</th>
+                    <th className="text-left text-xs font-medium text-text-secondary uppercase tracking-wider px-5 py-3">Action</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
@@ -184,10 +215,30 @@ export default function StudentDashboard() {
                       <td className="px-5 py-3.5 text-sm text-text font-medium">{sub.task?.title || `#${sub.task_id}`}</td>
                       <td className="px-5 py-3.5 text-sm text-text-secondary">{sub.original_filename}</td>
                       <td className="px-5 py-3.5 text-sm text-text-secondary">{new Date(sub.created_at).toLocaleDateString()}</td>
+                      <td className="px-5 py-3.5 text-xs text-text-secondary whitespace-normal break-words max-w-[300px] italic">
+                        {sub.notes ? `"${sub.notes}"` : '-'}
+                      </td>
                       <td className="px-5 py-3.5">
-                        <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${statusStyles[sub.status] || statusStyles.uploaded}`}>
-                          {sub.status === 'submitted' ? '🔒 AES Encrypted' : '⏳ Pending'}
-                        </span>
+                        <div className="flex flex-col gap-1">
+                          <span className={`text-xs font-medium px-2.5 py-1 rounded-full self-start ${statusStyles[sub.status] || statusStyles.uploaded}`}>
+                            {sub.status === 'verified' ? '✅ Verified by Teacher' : sub.status === 'submitted' ? '🔒 AES Encrypted' : '⏳ Pending'}
+                          </span>
+                          {sub.integrity_flag === 'duplicate_detected' && (
+                            <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-orange-100 text-orange-600 border border-orange-200 self-start">⚠️ Under Review</span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-5 py-3.5">
+                        {sub.status !== 'verified' ? (
+                          <button
+                            onClick={() => handleDelete(sub.id)}
+                            className="text-xs font-medium px-3 py-1.5 rounded-lg border border-danger/30 text-danger hover:bg-danger/10 transition-colors whitespace-nowrap"
+                          >
+                            🗑 Remove
+                          </button>
+                        ) : (
+                          <span className="text-xs text-text-secondary">Locked</span>
+                        )}
                       </td>
                     </tr>
                   ))}

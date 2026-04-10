@@ -26,6 +26,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/submissions', [SubmissionController::class, 'index']);
     Route::post('/submissions/upload', [SubmissionController::class, 'upload']);
     Route::get('/submissions/{id}/download', [SubmissionController::class, 'download']);
+    Route::delete('/submissions/{id}', [SubmissionController::class, 'destroy']);
 
     // Users API (For Sidebar User Directory)
     Route::get('/users/list', [UserController::class, 'index']);

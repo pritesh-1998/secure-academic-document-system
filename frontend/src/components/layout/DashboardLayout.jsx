@@ -1,4 +1,6 @@
 import { Outlet } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useAuth } from '../../context/AuthContext';
 import Sidebar from './Sidebar';
 import Navbar from './Navbar';
 
@@ -6,6 +8,13 @@ import Navbar from './Navbar';
 // It provides: fixed sidebar on left + navbar on top + scrollable content area
 
 export default function DashboardLayout({ title }) {
+  const { user } = useAuth();
+
+  useEffect(() => {
+    document.body.dataset.role = user?.role || '';
+    return () => { document.body.dataset.role = ''; };
+  }, [user?.role]);
+
   return (
     <div className="flex min-h-screen">
       <Sidebar />
